@@ -1,0 +1,7 @@
+export enum PostStatus {
+  WAITING_APPROVE = "WAITING_APPROVE",
+  ANALYST = "ANALYST",
+  DONE = "DONE",
+  PENDING = "PENDING",
+  CLOSE = "CLOSE",
+}
