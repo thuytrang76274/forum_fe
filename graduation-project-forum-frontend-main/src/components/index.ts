@@ -16,3 +16,5 @@ export { default as PostDetail } from "./PostDetail";
 export { default as PostDetailMain } from "./PostDetailMain";
 export { default as ListViewIssue } from "./ListViewIssue";
 export { default as FilterIssue } from "./FilterIssue";
+export { default as ListViewApprovePost } from "./ListViewApprovePost";
+export { default as ApprovePostIssue } from "./ApprovePostIssue";

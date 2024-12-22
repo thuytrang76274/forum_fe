@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import AppState from "./AppState";
 import { initState } from "./appReducer";
-import { AppAction } from "./actions";
+import { AppAction } from "./appActions";
 
 const AppContext = createContext<{
   state: AppState;

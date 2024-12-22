@@ -1,4 +1,4 @@
-import { AppAction } from "./actions";
+import { AppAction } from "./appActions";
 import AppState from "./AppState";
 
 const initState: AppState = {

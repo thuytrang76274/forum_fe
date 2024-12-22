@@ -4,3 +4,4 @@ export { default as Login } from "./Login";
 export { default as SingleIssue } from "./SingleIssue";
 export { default as SinglePost } from "./SinglePost";
 export { default as Appendix } from "./Appendix";
+export { default as ListPostOfIssue } from "./ListPostOfIssue";

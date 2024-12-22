@@ -17,3 +17,5 @@ export { PostStatus } from "./PostStatus";
 export type { TokenDto } from "./TokenDto";
 export { UserStatus } from "./UserStatus";
 export type { ResponseDto } from "./ResponseDto";
+export type { IssueFilterState } from "./IssueFilterState";
+export type { PostFilterState } from "./PostFilterState";

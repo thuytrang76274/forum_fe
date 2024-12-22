@@ -42,7 +42,7 @@ const AppAvatar = () => {
           onClick={handleClick}
           sx={{ marginLeft: "30px" }}
         >
-          <Avatar>{state.user?.name.charAt(0)}</Avatar>
+          <Avatar>{state.user?.name?.charAt(0)}</Avatar>
         </IconButton>
       </Badge>
       <Menu

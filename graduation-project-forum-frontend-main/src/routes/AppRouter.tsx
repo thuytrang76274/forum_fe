@@ -8,6 +8,7 @@ const Issue = React.lazy(() => import("../views/Issue"));
 const SingleIssue = React.lazy(() => import("../views/SingleIssue"));
 const SinglePost = React.lazy(() => import("../views/SinglePost"));
 const Appendix = React.lazy(() => import("../views/Appendix"));
+const ListPostOfIssue = React.lazy(() => import("../views/ListPostOfIssue"));
 
 function AppRouter() {
   return (
@@ -37,10 +38,18 @@ function AppRouter() {
         }
       />
       <Route
-        path="issue"
+        path="/issue"
         element={
           <PrivateRoute>
             <Issue />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/issue/:id/posts"
+        element={
+          <PrivateRoute>
+            <ListPostOfIssue />
           </PrivateRoute>
         }
       />

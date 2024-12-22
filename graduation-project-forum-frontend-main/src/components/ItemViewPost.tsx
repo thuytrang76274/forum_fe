@@ -17,6 +17,9 @@ import { useNavigate } from "react-router";
 
 const ItemViewPost = ({ id }: { id: number }) => {
   const navigate = useNavigate();
+  const post = {
+    status: "DONE",
+  };
   return (
     <Box width="100%">
       <Card>
@@ -27,7 +30,16 @@ const ItemViewPost = ({ id }: { id: number }) => {
         >
           <CardHeader
             avatar={<Avatar>T</Avatar>}
-            action={<Chip label="Done" size="small" color="success" />}
+            action={
+              <Chip
+                sx={{ bgcolor: "#FCF4EC" }}
+                label={
+                  <Typography color="#F48023" fontSize="10px">
+                    {post.status}
+                  </Typography>
+                }
+              />
+            }
             title="PDD_ThuyTrang.Nguyen"
             subheader={dayjs("2024-12-17").format("DD/MM/YYYY")}
           />

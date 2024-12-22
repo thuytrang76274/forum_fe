@@ -1,7 +1,6 @@
 import {
   Box,
   Card,
-  CardActionArea,
   CardHeader,
   Avatar,
   Chip,
@@ -15,23 +14,27 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import { BiComment } from "react-icons/bi";
-import { CommentDto, PostDto } from "../dtos";
-import { SlPin } from "react-icons/sl";
+import { PostDto } from "../dtos";
+import { BsPinAngle } from "react-icons/bs";
+import { BsPinAngleFill } from "react-icons/bs";
 import { BsHandThumbsUp } from "react-icons/bs";
 
-const PostDetailMain = ({
-  post,
-  comments,
-}: {
-  post: PostDto | undefined;
-  comments: CommentDto[];
-}) => {
+const PostDetailMain = ({ post }: { post: PostDto | undefined }) => {
   return (
     <Box width="100%">
       <Card>
         <CardHeader
-          avatar={<Avatar>T</Avatar>}
-          action={<Chip label="Done" size="small" color="success" />}
+          avatar={<Avatar>{post?.createdBy?.charAt(0)}</Avatar>}
+          action={
+            <Chip
+              sx={{ bgcolor: "#FCF4EC" }}
+              label={
+                <Typography color="#F48023" fontSize="10px">
+                  {"DONE"}
+                </Typography>
+              }
+            />
+          }
           title="PDD_ThuyTrang.Nguyen"
           subheader={dayjs("2024-12-17").format("DD/MM/YYYY")}
         />
@@ -158,13 +161,31 @@ const PostDetailMain = ({
           </Stack>
         </CardContent>
         <CardActions>
-          <Button size="small">
-            <Typography fontSize="13px" color="black">
-              Edit
+          <Button
+            size="small"
+            variant="outlined"
+            sx={{
+              border: "1px solid #F48023",
+              "&:hover": {
+                background: "#FCF4EC",
+              },
+            }}
+          >
+            <Typography fontSize="13px" sx={{ color: "#F48023" }}>
+              Edit post
             </Typography>
           </Button>
-          <Button size="small">
-            <Typography fontSize="13px" color="black">
+          <Button
+            size="small"
+            variant="outlined"
+            sx={{
+              border: "1px solid #F48023",
+              "&:hover": {
+                background: "#FCF4EC",
+              },
+            }}
+          >
+            <Typography fontSize="13px" sx={{ color: "#F48023" }}>
               Add comment
             </Typography>
           </Button>
@@ -178,7 +199,7 @@ const PostDetailMain = ({
           avatar={<Avatar>T</Avatar>}
           action={
             <IconButton>
-              <SlPin />
+              <BsPinAngleFill />
             </IconButton>
           }
           title="PDD_ThuyTrang.Nguyen"
@@ -201,7 +222,7 @@ const PostDetailMain = ({
           avatar={<Avatar>T</Avatar>}
           action={
             <IconButton>
-              <SlPin />
+              <BsPinAngle />
             </IconButton>
           }
           title="PDD_ThuyTrang.Nguyen"

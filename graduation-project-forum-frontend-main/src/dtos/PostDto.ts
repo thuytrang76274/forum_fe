@@ -1,5 +1,6 @@
 import { ApplyFor } from "./ApplyFor";
 import { AuditDto } from "./AuditDto";
+import { CommentDto } from "./CommentDto";
 import { IssueDto } from "./IssueDto";
 import { PostStatus } from "./PostStatus";
 import { SystemCodeDetailDto } from "./SystemCodeDetailDto";
@@ -13,4 +14,5 @@ export interface PostDto extends AuditDto {
   issue?: IssueDto;
   module?: SystemCodeDetailDto;
   customer?: SystemCodeDetailDto;
+  comments?: CommentDto[];
 }

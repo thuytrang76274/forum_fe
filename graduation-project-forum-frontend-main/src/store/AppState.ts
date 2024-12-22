@@ -1,7 +1,7 @@
-import { User } from "../dtos";
+import { UserState } from "../dtos";
 
 interface AppState {
-  user: User | undefined;
+  user: UserState | undefined;
 }
 
 export default AppState;

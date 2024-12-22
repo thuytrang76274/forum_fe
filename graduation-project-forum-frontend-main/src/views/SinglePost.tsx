@@ -1,43 +1,35 @@
 import { Box, Stack } from "@mui/material";
 import { LeftBar, PostDetail, PostDetailMain } from "../components";
 import { useEffect, useState } from "react";
-import { CommentDto, PostDto } from "../dtos";
+import { PostDto } from "../dtos";
 import { getSinglePost } from "../axios/post";
 import { useAppStore } from "../hooks";
-import { getListCommentByPost } from "../axios/comment";
 import { useParams } from "react-router";
 
 const SinglePost = () => {
   const params = useParams();
   const postId = params.id;
   const [post, setPost] = useState<PostDto | undefined>(undefined);
-  const [comments, setComments] = useState<CommentDto[]>([]);
   const { state } = useAppStore();
-  const getPost = async () => {
+  async function getPost() {
     try {
-      let response = await getSinglePost(
+      const response = await getSinglePost(
         Number(postId as string),
-        state.user.token
+        state.user?.token!
       );
       const postResponse: PostDto = response.data.data;
-      response = await getListCommentByPost(
-        Number(postId as string),
-        state.user.token
-      );
-      const commentsResponse: CommentDto[] = response.data.data;
       setPost(postResponse);
-      setComments(commentsResponse);
     } catch (e) {
       console.log(e);
     }
-  };
+  }
   useEffect(() => {
     try {
       getPost();
     } catch (e) {
       console.log(e);
     }
-  }, [post, comments]);
+  }, []);
   return (
     <Stack direction="row" bgcolor="#FAFAFA">
       <LeftBar />
@@ -52,7 +44,7 @@ const SinglePost = () => {
             overflowX: "hidden",
           }}
         >
-          <PostDetailMain post={post} comments={comments} />
+          <PostDetailMain post={post} />
         </Box>
         <PostDetail post={post} />
       </Box>

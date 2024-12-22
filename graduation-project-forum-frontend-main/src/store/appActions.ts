@@ -1,4 +1,4 @@
-import { User } from "../dtos";
+import { UserState } from "../dtos";
 
 interface LogoutAction {
   type: "LOGOUT";
@@ -6,7 +6,7 @@ interface LogoutAction {
 
 interface LoginAction {
   type: "LOGIN";
-  payload: User;
+  payload: UserState;
 }
 
 interface LoadingAction {
