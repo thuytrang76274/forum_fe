@@ -11,6 +11,7 @@ import { useState } from "react";
 import { pinComment } from "../axios/comment";
 import { useAppStore } from "../hooks";
 import { useNavigate } from "react-router";
+import DialogError from "./DialogError";
 
 const DialogPinComment = ({
   openPinComment,
@@ -88,34 +89,11 @@ const DialogPinComment = ({
             </Typography>
           </Button>
         </DialogActions>
-      </Dialog>
-      <Dialog open={openError}>
-        <DialogTitle>
-          <Typography fontSize="13px" fontWeight="700">
-            Error
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <Typography fontSize="13px">{errorMessage}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            variant="contained"
-            size="small"
-            sx={{
-              bgcolor: "black",
-            }}
-            onClick={() => setOpenError(false)}
-          >
-            <Typography
-              fontSize="13px"
-              color="white"
-              sx={{ textTransform: "none" }}
-            >
-              Accept
-            </Typography>
-          </Button>
-        </DialogActions>
+        <DialogError
+          openError={openError}
+          setOpenError={setOpenError}
+          errorMessage={errorMessage}
+        />
       </Dialog>
     </>
   );

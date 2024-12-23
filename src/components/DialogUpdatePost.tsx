@@ -25,6 +25,7 @@ import { getSinglePost, updatePost } from "../axios/post";
 import { IoStarOutline } from "react-icons/io5";
 import { getModule } from "../axios/systemcode";
 import { useLocation, useNavigate } from "react-router";
+import DialogError from "./DialogError";
 
 const optionsApplyFor = [
   {
@@ -105,6 +106,8 @@ const DialogUpdatePost = ({
       isChange: false,
     },
   });
+  const [openError, setOpenError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const handleListAssignee = (currentPost: PostDto | undefined) => {
     const assigneeLength = currentPost?.issue?.assignees?.length;
     if (assigneeLength === undefined || assigneeLength === 0) return "--";
@@ -184,6 +187,8 @@ const DialogUpdatePost = ({
       navigate(0);
     } catch (e) {
       console.log(e);
+      setOpenError(true);
+      setErrorMessage(e.response.data.data.message);
     }
   }
   useEffect(() => {
@@ -422,7 +427,7 @@ const DialogUpdatePost = ({
             color="white"
             sx={{ textTransform: "none" }}
           >
-            Approve
+            Update
           </Typography>
         </Button>
         <Button
@@ -440,6 +445,11 @@ const DialogUpdatePost = ({
           </Typography>
         </Button>
       </DialogActions>
+      <DialogError
+        openError={openError}
+        setOpenError={setOpenError}
+        errorMessage={errorMessage}
+      />
     </Dialog>
   );
 };

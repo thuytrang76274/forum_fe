@@ -90,6 +90,7 @@ const DialogCreatePost = ({
       },
       title: change.title,
       description: change.description,
+      applyFor: change.applyFor,
       customer: {
         id: Number(change.customer),
       },
@@ -285,7 +286,7 @@ const DialogCreatePost = ({
               color="white"
               sx={{ textTransform: "none" }}
             >
-              Send
+              Create
             </Typography>
           </Button>
           <Button

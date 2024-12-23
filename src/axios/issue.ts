@@ -47,3 +47,25 @@ export async function updateIssue(
     method: "patch",
   });
 }
+
+export async function createIssue(payload: FormData, token: string) {
+  return await axios({
+    url: `${issueUrl}`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+    data: payload,
+    method: "post",
+  });
+}
+
+export async function callFromPenpot(token: string) {
+  return await axios({
+    url: `${issueUrl}/call-penpot`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    method: "get",
+  });
+}

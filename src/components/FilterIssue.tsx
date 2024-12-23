@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { CgSearch } from "react-icons/cg";
+import { IoSync } from "react-icons/io5";
 import { FilterIssueState, OptionFilterIssue } from "../types";
 
 const FilterIssue = ({
@@ -19,11 +20,13 @@ const FilterIssue = ({
   setFilter,
   options,
   handleSearch,
+  handleGetFromPenpot,
 }: {
   filter: FilterIssueState;
   setFilter: (filter: FilterIssueState) => void;
   options: OptionFilterIssue;
   handleSearch: () => Promise<void>;
+  handleGetFromPenpot: () => Promise<void>;
 }) => {
   const handleChangeAssignees = (event: SelectChangeEvent<string[]>) => {
     const {
@@ -44,24 +47,26 @@ const FilterIssue = ({
       >
         <Box>
           <Typography fontSize="13px">Date range</Typography>
-          <DatePicker
-            sx={{ width: "170px", mt: 2 }}
-            value={filter.fromDate}
-            label="From date"
-            onChange={(value) => setFilter({ ...filter, fromDate: value })}
-            slotProps={{ textField: { size: "small" } }}
-          />
-          <DatePicker
-            sx={{ width: "170px", marginLeft: "10px", mt: 2 }}
-            value={filter.toDate}
-            label="To date"
-            onChange={(value) => setFilter({ ...filter, toDate: value })}
-            slotProps={{ textField: { size: "small" } }}
-          />
+          <Box display="flex" flexDirection="row">
+            <DatePicker
+              sx={{ width: "170px", mt: 2 }}
+              value={filter.fromDate}
+              label="From date"
+              onChange={(value) => setFilter({ ...filter, fromDate: value })}
+              slotProps={{ textField: { size: "small" } }}
+            />
+            <DatePicker
+              sx={{ width: "170px", mt: 2, ml: 1 }}
+              value={filter.toDate}
+              label="To date"
+              onChange={(value) => setFilter({ ...filter, toDate: value })}
+              slotProps={{ textField: { size: "small" } }}
+            />
+          </Box>
         </Box>
-        <Box marginLeft="16px">
+        <Box ml={2}>
           <Typography fontSize="13px">Date Type</Typography>
-          <FormControl size="small" sx={{ minWidth: "220px", mt: 2 }}>
+          <FormControl size="small" sx={{ minWidth: "150px", mt: 2 }}>
             <Select
               value={filter.dateType}
               onChange={(e) =>
@@ -74,19 +79,22 @@ const FilterIssue = ({
             </Select>
           </FormControl>
         </Box>
-        <Box marginLeft="16px">
+        <Box ml={2}>
           <Button
-            variant="contained"
             startIcon={<CgSearch />}
-            onClick={() => {
-              handleSearch();
-            }}
-            sx={{
-              textTransform: "none",
-              bgcolor: "#F48023",
-            }}
+            variant="contained"
+            onClick={() => handleSearch()}
+            sx={{ textTransform: "none", bgcolor: "#F48023" }}
           >
             <Typography fontSize="13px">Search</Typography>
+          </Button>
+          <Button
+            startIcon={<IoSync />}
+            variant="contained"
+            onClick={() => handleGetFromPenpot()}
+            sx={{ textTransform: "none", mt: 1, bgcolor: "#F48023" }}
+          >
+            <Typography fontSize="13px">Get issues from penpot</Typography>
           </Button>
         </Box>
       </Box>

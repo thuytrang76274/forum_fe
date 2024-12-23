@@ -175,40 +175,38 @@ const ApprovePostIssue = ({
                 </Grid2>
               </Stack>
             </CardContent>
-            {state.user?.role === "ADMIN" && (
-              <CardActions sx={{ justifyContent: "center" }}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  sx={{
-                    bgcolor: "#F48023",
-                  }}
-                  onClick={handleOpenApprove}
+            <CardActions sx={{ justifyContent: "center" }}>
+              <Button
+                size="small"
+                variant="contained"
+                sx={{
+                  bgcolor: "#F48023",
+                }}
+                onClick={handleOpenApprove}
+              >
+                <Typography
+                  fontSize="13px"
+                  color="white"
+                  sx={{ textTransform: "none" }}
                 >
-                  <Typography
-                    fontSize="13px"
-                    color="white"
-                    sx={{ textTransform: "none" }}
-                  >
-                    Approve
-                  </Typography>
-                </Button>
-                <Button
-                  size="small"
-                  variant="contained"
-                  sx={{ bgcolor: "black" }}
-                  onClick={handleOpenRefuse}
+                  Approve
+                </Typography>
+              </Button>
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ bgcolor: "black" }}
+                onClick={handleOpenRefuse}
+              >
+                <Typography
+                  fontSize="13px"
+                  color="white"
+                  sx={{ textTransform: "none" }}
                 >
-                  <Typography
-                    fontSize="13px"
-                    color="white"
-                    sx={{ textTransform: "none" }}
-                  >
-                    Refuse
-                  </Typography>
-                </Button>
-              </CardActions>
-            )}
+                  Refuse
+                </Typography>
+              </Button>
+            </CardActions>
           </Card>
           <Card sx={{ width: "277px" }}>
             <CardHeader avatar={<IoStarOutline />} title="Details" />

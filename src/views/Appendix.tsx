@@ -8,13 +8,14 @@ import {
 } from "../components";
 import { useEffect, useState } from "react";
 import { getListPost } from "../axios/post";
-import { PostDto, SystemCodeDetailDto, UserDto } from "../dtos";
+import { CommentDto, PostDto, SystemCodeDetailDto, UserDto } from "../dtos";
 import { useLocation } from "react-router";
 import { getVersions } from "../axios/issue";
 import { getType, getCustomer, getModule } from "../axios/systemcode";
 import { getAllUsers } from "../axios/user";
 import { useAppStore } from "../hooks";
 import { FilterPostState, OptionFilterPost } from "../types";
+import { getCommentsByPost } from "../axios/comment";
 
 const Appendix = () => {
   const { state } = useAppStore();
@@ -77,6 +78,14 @@ const Appendix = () => {
       setLoading(true);
       response = await getListPost(url, state.user?.token);
       const postsResponse: PostDto[] = response.data.data.data;
+      for (let i = 0; i < postsResponse.length; ++i) {
+        response = await getCommentsByPost(
+          postsResponse[i].id,
+          state.user?.token
+        );
+        const commentsResponse: CommentDto[] = response.data.data;
+        postsResponse[i].comments = commentsResponse;
+      }
       setPosts(postsResponse);
       setLoading(false);
     } catch (e) {
@@ -107,9 +116,17 @@ const Appendix = () => {
         url = url.concat(`&isDealCustomer=${filter.isDealCustomer}`);
       url = url.concat(`&isAppendix=true`);
       setLoading(true);
-      const response = await getListPost(url, state.user?.token);
-      const postResponse: PostDto[] = response.data.data.data;
-      setPosts(postResponse);
+      let response = await getListPost(url, state.user?.token);
+      const postsResponse: PostDto[] = response.data.data.data;
+      for (let i = 0; i < postsResponse.length; ++i) {
+        response = await getCommentsByPost(
+          postsResponse[i].id,
+          state.user?.token
+        );
+        const commentsResponse: CommentDto[] = response.data.data;
+        postsResponse[i].comments = commentsResponse;
+      }
+      setPosts(postsResponse);
       setLoading(false);
     } catch (e) {
       console.log(e);

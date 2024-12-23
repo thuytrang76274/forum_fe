@@ -3,9 +3,19 @@ import { baseUrl } from "./config";
 
 export const commentUrl = `${baseUrl}/comment`;
 
-export async function getListCommentByPost(postId: number, token: string) {
+export async function getCommentsByPost(postId: number, token: string) {
   return await axios({
     url: `${commentUrl}/post/${postId}`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    method: "get",
+  });
+}
+
+export async function getCommentSolutionsByPost(postId: number, token: string) {
+  return await axios({
+    url: `${commentUrl}/post/${postId}/solution`,
     headers: {
       Authorization: `Bearer ${token}`,
     },

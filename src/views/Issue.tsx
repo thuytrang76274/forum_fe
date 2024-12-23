@@ -1,15 +1,17 @@
 import { Box, Stack } from "@mui/material";
 import { FilterIssue, LeftBar, ListViewIssue } from "../components";
 import { useEffect, useState } from "react";
-import { IssueDto, SystemCodeDetailDto, UserDto } from "../dtos";
-import { getListIssue, getVersions } from "../axios/issue";
+import { IssueDto, PostDto, SystemCodeDetailDto, UserDto } from "../dtos";
+import { callFromPenpot, getListIssue, getVersions } from "../axios/issue";
 import { useAppStore } from "../hooks";
 import { FilterIssueState, OptionFilterIssue } from "../types";
 import { getType, getCustomer } from "../axios/systemcode";
 import { getAllUsers } from "../axios/user";
+import { getPostsByIssue } from "../axios/post";
 
 function Issue() {
   const { state } = useAppStore();
+  const token = state.user?.token;
   const [filter, setFilter] = useState<FilterIssueState>({
     dateType: "createdAt",
     fromDate: null,
@@ -39,13 +41,13 @@ function Issue() {
   const [loading, setLoading] = useState<boolean>(false);
   async function getInfo() {
     try {
-      let response = await getAllUsers(state.user?.token);
+      let response = await getAllUsers(token);
       const assigneesResponse: UserDto[] = response.data.data;
-      response = await getType(state.user?.token);
+      response = await getType(token);
       const typesResponse: SystemCodeDetailDto[] = response.data.data;
-      response = await getCustomer(state.user?.token);
+      response = await getCustomer(token);
       const customersResponse: SystemCodeDetailDto[] = response.data.data;
-      response = await getVersions(state.user?.token);
+      response = await getVersions(token);
       const versionsResponse: string[] = response.data.data;
       setOptions({
         ...options,
@@ -56,13 +58,65 @@ function Issue() {
       });
       const url = `?typeDate=${filter.dateType}&page=0&size=100`;
       setLoading(true);
-      response = await getListIssue(url, state.user?.token);
+      response = await getListIssue(url, token);
       const issueResponse: IssueDto[] = response.data.data.data;
+      for (let i = 0; i < issueResponse.length; ++i) {
+        response = await getPostsByIssue(issueResponse[i].id, token);
+        const postsResponse: PostDto[] = response.data.data;
+        const approvePost = postsResponse.find(
+          (p) => p.status === "WAITING_APPROVE"
+        );
+        if (approvePost) {
+          issueResponse[i].numberOfPosts = postsResponse.filter(
+            (p) => p.status === "WAITING_APPROVE"
+          ).length;
+        } else {
+          issueResponse[i].numberOfPosts = 0;
+        }
+      }
       setIssues(issueResponse);
       setLoading(false);
     } catch (e) {
       console.log(e);
       setLoading(false);
+    }
+  }
+  async function handleGetFromPenpot() {
+    try {
+      setFilter({
+        dateType: "createdAt",
+        fromDate: null,
+        toDate: null,
+        status: "",
+        assignees: [],
+        type: "",
+        customer: "",
+        version: "",
+        isDealCustomer: "",
+        isAppendix: "",
+      });
+      setLoading(true);
+      await callFromPenpot(token);
+      const url = `?typeDate=${filter.dateType}&page=0&size=100`;
+      let response = await getListIssue(url, token);
+      const issueResponse: IssueDto[] = response.data.data.data;
+      for (let i = 0; i < issueResponse.length; ++i) {
+        response = await getPostsByIssue(issueResponse[i].id, token);
+        const postsResponse: PostDto[] = response.data.data;
+        const approvePost = postsResponse.find(
+          (p) => p.status === "WAITING_APPROVE"
+        );
+        if (approvePost) {
+          issueResponse[i].numberOfPosts = postsResponse.filter(
+            (p) => p.status === "WAITING_APPROVE"
+          ).length;
+        } else {
+          issueResponse[i].numberOfPosts = 0;
+        }
+      }
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
     }
   }
   async function handleSearch() {
@@ -83,9 +137,23 @@ function Issue() {
       if (filter.isAppendix !== "")
         url = url.concat(`&isAppendix=${filter.isAppendix}`);
       setLoading(true);
-      const response = await getListIssue(url, state.user?.token);
-      const postResponse: IssueDto[] = response.data.data.data;
-      setIssues(postResponse);
+      let response = await getListIssue(url, state.user?.token);
+      const issueResponse: IssueDto[] = response.data.data.data;
+      for (let i = 0; i < issueResponse.length; ++i) {
+        response = await getPostsByIssue(issueResponse[i].id, token);
+        const postsResponse: PostDto[] = response.data.data;
+        const filteredPost = postsResponse.find(
+          (p) => p.status === "WAITING_APPROVE"
+        );
+        if (filteredPost) {
+          issueResponse[i].numberOfPosts = postsResponse.filter(
+            (p) => p.status === "WAITING_APPROVE"
+          ).length;
+        } else {
+          issueResponse[i].numberOfPosts = 0;
+        }
+      }
+      setIssues(issueResponse);
       setLoading(false);
     } catch (e) {
       console.log(e);
@@ -113,6 +181,7 @@ function Issue() {
             setFilter={setFilter}
             options={options}
             handleSearch={handleSearch}
+            handleGetFromPenpot={handleGetFromPenpot}
           />
           <ListViewIssue issues={issues} loading={loading} />
         </Box>

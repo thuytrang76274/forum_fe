@@ -17,11 +17,18 @@ import {
   MenuItem,
   Select,
   Stack,
+  SelectChangeEvent,
 } from "@mui/material";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { IoStarOutline } from "react-icons/io5";
 import { useAppStore } from "../hooks";
 import { DatePicker } from "@mui/x-date-pickers";
+import { useEffect, useState } from "react";
+import { SystemCodeDetailDto, UserDto } from "../dtos";
+import { getType, getCustomer } from "../axios/systemcode";
+import { getAllUsers } from "../axios/user";
+import { createIssue } from "../axios/issue";
+import { useNavigate } from "react-router";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -37,13 +44,117 @@ const VisuallyHiddenInput = styled("input")({
 
 const DialogCreateIssue = ({
   open,
-  handleClose,
+  setOpen,
 }: {
   open: boolean;
-  handleClose: () => void;
+  setOpen: (open: boolean) => void;
 }) => {
   const { state } = useAppStore();
-
+  const navigate = useNavigate();
+  const [options, setOptions] = useState<{
+    customers: SystemCodeDetailDto[];
+    assignees: UserDto[];
+    types: SystemCodeDetailDto[];
+    isAppendix: string[];
+  }>({
+    customers: [],
+    assignees: [],
+    types: [],
+    isAppendix: ["true", "false"],
+  });
+  const [change, setChange] = useState<{
+    content: string;
+    customer: string;
+    assignees: string[];
+    type: string;
+    dueDate: Dayjs | null;
+    files: FileList | null;
+  }>({
+    content: "",
+    customer: "",
+    assignees: [],
+    type: "",
+    dueDate: null,
+    files: null,
+  });
+  async function getInfo() {
+    let response = await getType(state.user?.token);
+    const typesResponse: SystemCodeDetailDto[] = response.data.data;
+    response = await getAllUsers(state.user?.token);
+    const assigneesResponse: UserDto[] = response.data.data;
+    response = await getCustomer(state.user?.token);
+    const customersResponse: SystemCodeDetailDto[] = response.data.data;
+    setOptions({
+      ...options,
+      customers: customersResponse,
+      assignees: assigneesResponse,
+      types: typesResponse,
+    });
+  }
+  const handleChangeAssignee = (event: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value },
+    } = event;
+    setChange({
+      ...change,
+      assignees: typeof value === "string" ? value.split(",") : value,
+    });
+  };
+  async function handleCreateIssue() {
+    try {
+      console.log(change);
+      const payload = {
+        content: change.content.length === 0 ? null : change.content,
+        dueDate:
+          change.dueDate === null ? null : change.dueDate.format("YYYY-MM-DD"),
+        customer:
+          change.customer.length === 0
+            ? null
+            : {
+                id: change.customer,
+              },
+        type:
+          change.type.length === 0
+            ? null
+            : {
+                id: change.type,
+              },
+        assignees:
+          change.assignees.length === 0
+            ? null
+            : change.assignees.map((a) => {
+                return {
+                  id: Number(a),
+                };
+              }),
+      };
+      console.log(JSON.stringify(payload));
+      const formData = new FormData();
+      formData.append("issue", JSON.stringify(payload));
+      if (change.files !== null) {
+        formData.append("image", change.files.item(0));
+      }
+      await createIssue(formData, state.user?.token);
+      setOpen(false);
+      navigate(0);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  function handleClose() {
+    setChange({
+      content: "",
+      customer: "",
+      assignees: [],
+      type: "",
+      dueDate: null,
+      files: null,
+    });
+    setOpen(false);
+  }
+  useEffect(() => {
+    getInfo();
+  }, []);
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
       <DialogTitle>
@@ -60,6 +171,13 @@ const DialogCreateIssue = ({
             <CardContent>
               <TextField
                 required
+                value={change.content}
+                onChange={(e) =>
+                  setChange({
+                    ...change,
+                    content: e.target.value,
+                  })
+                }
                 size="small"
                 fullWidth
                 label="Issue description"
@@ -73,13 +191,23 @@ const DialogCreateIssue = ({
                 variant="contained"
                 sx={{ textTransform: "none", bgcolor: "#F48023", mt: 2 }}
               >
-                Upload image to describe the current issue
+                Upload image to describe the issue
                 <VisuallyHiddenInput
                   type="file"
                   accept="image/*"
-                  onChange={(event) => console.log(event.target.files)}
+                  onChange={(event) =>
+                    setChange({
+                      ...change,
+                      files: event.target.files,
+                    })
+                  }
                 />
               </Button>
+              {change.files !== null && (
+                <Typography fontSize="13px">
+                  {change.files.item(0)?.name}
+                </Typography>
+              )}
             </CardContent>
           </Card>
           <Card sx={{ width: "277px" }}>
@@ -89,53 +217,68 @@ const DialogCreateIssue = ({
                 <FormControl size="small" fullWidth required>
                   <InputLabel id="customer-label">Customer</InputLabel>
                   <Select
-                    value={""}
+                    value={change.customer}
                     id="customer-label"
-                    label="Status"
-                    onChange={(e) => {}}
+                    label="Customer"
+                    onChange={(e) =>
+                      setChange({ ...change, customer: e.target.value })
+                    }
                   >
-                    {/* {options.status.map((o) => (
-                    <MenuItem key={o} value={o}>
-                      <Typography fontSize="13px">{o}</Typography>
+                    <MenuItem value="">
+                      <em>None</em>
                     </MenuItem>
-                  ))} */}
+                    {options.customers.map((c) => (
+                      <MenuItem key={c.id} value={c.id}>
+                        <Typography fontSize="13px">
+                          {c.description ?? c.codeName}
+                        </Typography>
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
                 <FormControl size="small" fullWidth>
                   <InputLabel id="assignee-label">Assignee</InputLabel>
                   <Select
-                    value={""}
+                    value={change.assignees}
                     id="assignee-label"
-                    label="Status"
+                    label="Assignees"
                     multiple
-                    onChange={(e) => {}}
+                    onChange={handleChangeAssignee}
                   >
-                    {/* {options.status.map((o) => (
-                    <MenuItem key={o} value={o}>
-                      <Typography fontSize="13px">{o}</Typography>
-                    </MenuItem>
-                  ))} */}
+                    {options.assignees.map((a) => (
+                      <MenuItem key={a.id} value={a.id}>
+                        <Typography fontSize="13px">
+                          {a.name ?? a.username}
+                        </Typography>
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
                 <FormControl size="small" fullWidth required>
                   <InputLabel id="type-label">Type</InputLabel>
                   <Select
-                    value={""}
+                    value={change.type}
                     id="type-label"
-                    label="Status"
-                    onChange={(e) => {}}
+                    label="Type"
+                    onChange={(e) => {
+                      setChange({ ...change, type: e.target.value });
+                    }}
                   >
-                    {/* {options.status.map((o) => (
-                    <MenuItem key={o} value={o}>
-                      <Typography fontSize="13px">{o}</Typography>
-                    </MenuItem>
-                  ))} */}
+                    {options.types.map((t) => (
+                      <MenuItem key={t.id} value={t.id}>
+                        <Typography fontSize="13px">
+                          {t.description ?? t.codeName}
+                        </Typography>
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
                 <TextField size="small" label="Version" />
                 <DatePicker
+                  value={change.dueDate}
                   slotProps={{ textField: { size: "small" } }}
                   label="Due date"
+                  onChange={(e) => setChange({ ...change, dueDate: e })}
                 />
               </Stack>
             </CardContent>
@@ -149,14 +292,16 @@ const DialogCreateIssue = ({
           sx={{
             bgcolor: "#F48023",
           }}
-          onClick={() => {}}
+          onClick={() => {
+            handleCreateIssue();
+          }}
         >
           <Typography
             fontSize="13px"
             color="white"
             sx={{ textTransform: "none" }}
           >
-            Create issue
+            Create
           </Typography>
         </Button>
         <Button

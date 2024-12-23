@@ -1,5 +1,4 @@
 import {
-  Backdrop,
   Box,
   Button,
   Dialog,
@@ -12,7 +11,8 @@ import {
 import { useState } from "react";
 import { addCommentToPost } from "../axios/comment";
 import { useAppStore } from "../hooks";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import DialogError from "./DialogError";
 
 const DialogAddComment = ({
   currentPostId,
@@ -24,10 +24,10 @@ const DialogAddComment = ({
   setOpenAddComment: (open: boolean) => void;
 }) => {
   const { state } = useAppStore();
-  const { pathname } = useLocation();
   const navigate = useNavigate();
   const [comment, setComment] = useState<string>("");
-  const [errorText, setErrorText] = useState<string | undefined>(undefined);
+  const [openError, setOpenError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const handleAddComment = async () => {
     try {
       await addCommentToPost(
@@ -39,16 +39,17 @@ const DialogAddComment = ({
         },
         state.user?.token
       );
+      setOpenAddComment(false);
       navigate(0);
     } catch (e) {
       console.log(e.response.data.data);
-      setErrorText(e.response.data.data.message);
+      setOpenError(true);
+      setErrorMessage(e.response.data.data.message);
     }
   };
   const handleClose = () => {
     setOpenAddComment(false);
     setComment("");
-    setErrorText(undefined);
   };
   return (
     <Dialog open={openAddComment} onClose={handleClose} fullWidth maxWidth="sm">
@@ -61,8 +62,6 @@ const DialogAddComment = ({
             label="Comment"
             fullWidth
             multiline
-            helperText={errorText}
-            error={errorText === undefined ? false : true}
             rows={3}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
@@ -83,7 +82,7 @@ const DialogAddComment = ({
             color="white"
             sx={{ textTransform: "none" }}
           >
-            Approve
+            Add
           </Typography>
         </Button>
         <Button
@@ -101,6 +100,11 @@ const DialogAddComment = ({
           </Typography>
         </Button>
       </DialogActions>
+      <DialogError
+        openError={openError}
+        setOpenError={setOpenError}
+        errorMessage={errorMessage}
+      />
     </Dialog>
   );
 };

@@ -2,9 +2,6 @@ import { Box, List, ListSubheader } from "@mui/material";
 import { CgSearch } from "react-icons/cg";
 import { LuList } from "react-icons/lu";
 import { FiTag } from "react-icons/fi";
-import { GoQuestion } from "react-icons/go";
-import { CgFileDocument } from "react-icons/cg";
-import { FaRegHeart } from "react-icons/fa";
 import LeftBarItem from "./LeftBarItem";
 
 const LeftBar = () => {
@@ -47,7 +44,7 @@ const LeftBar = () => {
             }}
           />
         </List>
-        <List
+        {/* <List
           subheader={
             <ListSubheader sx={{ paddingX: "50px" }}>
               PERSONAL NAVIGATOR
@@ -75,7 +72,7 @@ const LeftBar = () => {
               icon: <FaRegHeart />,
             }}
           />
-        </List>
+        </List> */}
       </Box>
     </Box>
   );

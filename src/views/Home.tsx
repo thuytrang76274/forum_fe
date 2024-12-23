@@ -2,7 +2,7 @@ import { Box, Stack } from "@mui/material";
 import { FilterPost, LeftBar, ListViewPost } from "../components";
 import TopDiscussion from "../components/TopDiscussion";
 import { useEffect, useState } from "react";
-import { PostDto, SystemCodeDetailDto, UserDto } from "../dtos";
+import { CommentDto, PostDto, SystemCodeDetailDto, UserDto } from "../dtos";
 import { getListPost } from "../axios/post";
 import { useAppStore } from "../hooks";
 import { FilterPostState, OptionFilterPost } from "../types";
@@ -10,6 +10,7 @@ import { getAllUsers } from "../axios/user";
 import { getCustomer, getModule, getType } from "../axios/systemcode";
 import { getVersions } from "../axios/issue";
 import { useLocation } from "react-router";
+import { getCommentsByPost } from "../axios/comment";
 
 function Home() {
   const { state } = useAppStore();
@@ -74,6 +75,14 @@ function Home() {
       setLoading(true);
       response = await getListPost(url, state.user?.token);
       const postsResponse: PostDto[] = response.data.data.data;
+      for (let i = 0; i < postsResponse.length; ++i) {
+        response = await getCommentsByPost(
+          postsResponse[i].id,
+          state.user?.token
+        );
+        const commentsResponse: CommentDto[] = response.data.data;
+        postsResponse[i].comments = commentsResponse;
+      }
       setPosts(postsResponse);
       setLoading(false);
     } catch (e) {
@@ -106,9 +115,17 @@ function Home() {
         url = url.concat(`&isAppendix=true`);
       }
       setLoading(true);
-      const response = await getListPost(url, state.user?.token);
-      const postResponse: PostDto[] = response.data.data.data;
-      setPosts(postResponse);
+      let response = await getListPost(url, state.user?.token);
+      const postsResponse: PostDto[] = response.data.data.data;
+      for (let i = 0; i < postsResponse.length; ++i) {
+        response = await getCommentsByPost(
+          postsResponse[i].id,
+          state.user?.token
+        );
+        const commentsResponse: CommentDto[] = response.data.data;
+        postsResponse[i].comments = commentsResponse;
+      }
+      setPosts(postsResponse);
       setLoading(false);
     } catch (e) {
       console.log(e);

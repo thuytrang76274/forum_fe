@@ -14,7 +14,9 @@ import { FiPlusCircle } from "react-icons/fi";
 import { GoBell } from "react-icons/go";
 import AppAvatar from "./AppAvatar";
 import { useLocation } from "react-router";
-import DialogCreateIssue from "./DialogCreateIssue";
+import React from "react";
+
+const DialogCreateIssue = React.lazy(() => import("./DialogCreateIssue"));
 
 const NavBar = () => {
   const { state } = useContext(AppContext);
@@ -70,7 +72,7 @@ const NavBar = () => {
               </Badge>
               <AppAvatar />
             </Box>
-            <DialogCreateIssue open={open} handleClose={handleClose} />
+            <DialogCreateIssue open={open} setOpen={setOpen} />
           </>
         )}
       </Toolbar>

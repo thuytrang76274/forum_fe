@@ -1,10 +1,11 @@
 import { Box, Stack } from "@mui/material";
 import { LeftBar, PostDetail, PostDetailMain } from "../components";
 import { useEffect, useState } from "react";
-import { PostDto } from "../dtos";
+import { CommentDto, PostDto } from "../dtos";
 import { getSinglePost } from "../axios/post";
 import { useAppStore } from "../hooks";
 import { useParams } from "react-router";
+import { getCommentsByPost } from "../axios/comment";
 
 const SinglePost = () => {
   const params = useParams();
@@ -13,11 +14,14 @@ const SinglePost = () => {
   const { state } = useAppStore();
   async function getPost() {
     try {
-      const response = await getSinglePost(
+      let response = await getSinglePost(
         Number(postId as string),
         state.user?.token!
       );
       const postResponse: PostDto = response.data.data;
+      response = await getCommentsByPost(postResponse.id, state.user?.token);
+      const commentsResponse: CommentDto[] = response.data.data;
+      postResponse.comments = commentsResponse;
       setPost(postResponse);
     } catch (e) {
       console.log(e);

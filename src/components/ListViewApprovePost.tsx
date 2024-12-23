@@ -19,43 +19,6 @@ import { useAppStore } from "../hooks";
 import { useParams } from "react-router";
 
 const ListViewApprovePost = () => {
-  const post: PostDto = {
-    id: 1,
-    title: "--",
-    issue: {
-      id: 1,
-      content:
-        "The process of manually downloading inventory from the system every day is often repeated. Can the system do it automatically and send it to me?",
-      version: "2.1.0",
-      type: {
-        id: 1,
-        codeName: "Customized",
-      },
-      customer: {
-        id: 1,
-        codeName: "TTC AGRIS",
-      },
-      assignees: [
-        { id: 1, name: "PDD_Thy.Nguyen" },
-        { id: 2, name: "PDD_ThuyTrang.Nguyen" },
-      ],
-      isAppendix: true,
-      isDealCustomer: false,
-      dueDate: "20/10/2024",
-    },
-    description:
-      "This needs to be done. So, what information fields should be sent to customers when their only need is to store and compare inventory every day?",
-    customer: {
-      id: 1,
-      codeName: "TTC AGRIS",
-    },
-    module: {
-      id: 1,
-      codeName: "Inventory",
-    },
-    createdBy: "PDD_ThuyTrang.Nguyen",
-    createdAt: "17/12/2024",
-  };
   const [openRefuseAll, setOpenRefuseAll] = useState<boolean>(false);
   const handleOpenRefuseAll = () => setOpenRefuseAll(true);
   const handleCloseRefuseAll = () => setOpenRefuseAll(false);

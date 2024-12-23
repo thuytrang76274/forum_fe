@@ -29,6 +29,7 @@ import { getCustomer, getType } from "../axios/systemcode";
 import { getAllUsers } from "../axios/user";
 import { baseImageUrl } from "../axios/config";
 import { useNavigate } from "react-router";
+import DialogError from "./DialogError";
 
 const issueStatus = [
   "NEW",
@@ -92,6 +93,8 @@ const DialogUpdateIssue = ({
     assignee: [],
     status: [],
   });
+  const [openError, setOpenError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   async function getInfo() {
     let response = await getSingleIssue(currentIssueId, state.user?.token);
     const issue: IssueDto = response.data.data;
@@ -178,6 +181,8 @@ const DialogUpdateIssue = ({
       navigate(0);
     } catch (e) {
       console.log(e);
+      setOpenError(true);
+      setErrorMessage(e.response.data.data.message);
     }
   }
   useEffect(() => {
@@ -496,6 +501,11 @@ const DialogUpdateIssue = ({
           </Typography>
         </Button>
       </DialogActions>
+      <DialogError
+        openError={openError}
+        setOpenError={setOpenError}
+        errorMessage={errorMessage}
+      />
     </Dialog>
   );
 };
